@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"qotd-python:latest","namespace":"pipelines-tutorial"},"fieldPath":"spec.template.spec.containers[?(@.name==\"qotd-python\")].image"}]'
+    openshift.io/generated-by: OpenShiftNewApp
+  labels:
+    app: qotd-python-app
+    app.kubernetes.io/component: qotd-python-app
+    app.kubernetes.io/instance: qotd-python-app
+    app.kubernetes.io/name: qotd-python
+  name: qotd-python-app
+  namespace: pipelines-tutorial
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      deployment: qotd-python-app
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        openshift.io/generated-by: OpenShiftNewApp
+      creationTimestamp: null
+      labels:
+        deployment: qotd-python-app
+    spec:
+      containers:
+      - image: image-registry.openshift-image-registry.svc:5000/pipelines-tutorial/qotd-python:latest
+        imagePullPolicy: IfNotPresent
+        name: qotd-python
+        ports:
+        - containerPort: 10000
+          protocol: TCP
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      terminationGracePeriodSeconds: 30

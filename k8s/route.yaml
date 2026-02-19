@@ -1,14 +1,20 @@
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
+  annotations:
+    openshift.io/host.generated: "true"
   labels:
-    app: quotes
-    sandbox: learn-kubernetes
-    learn-kubernetes: quotes
-  name: quotes
+    app: qotd-python-app
+    app.kubernetes.io/component: qotd-python-app
+    app.kubernetes.io/instance: qotd-python-app
+    app.kubernetes.io/name: qotd-python
+  name: qotd-python-app
+  namespace: pipelines-tutorial
 spec:
   port:
     targetPort: 10000-tcp
   to:
     kind: Service
-    name: quotes
+    name: qotd-python-app
+    weight: 100
+  wildcardPolicy: None
